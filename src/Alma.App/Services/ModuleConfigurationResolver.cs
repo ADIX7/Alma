@@ -17,12 +17,12 @@ public class ModuleConfigurationResolver : IModuleConfigurationResolver
 
     public async Task<(ModuleConfiguration? mergedModuleConfig, string? moduleConfigFileName)> ResolveModuleConfiguration(string moduleConfigStub)
     {
-        (ModuleConfigurationRoot? moduleConfigRoot, string? moduleConfigFileName) = await _configurationFileReader.DeserializeAsync<ModuleConfigurationRoot>(moduleConfigStub, (o )=> new JsonSourceGenerationContext(o));
+        (ModuleConfigurationRoot? moduleConfigRoot, string? moduleConfigFileName) = await _configurationFileReader.DeserializeAsync<ModuleConfigurationRoot>(moduleConfigStub, (o) => new JsonSourceGenerationContext(o));
 
         if (moduleConfigRoot is null) return (null, null);
 
         var validModuleConfigurations = moduleConfigRoot.Where(m => _osInformation.IsOnPlatform(m.Key));
-        
+
         //TODO: priority order
         var orderedValidModuleConfigurations = new Dictionary<string, ModuleConfiguration>(validModuleConfigurations);
 
