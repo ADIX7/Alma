@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace Alma.Services;
 
 public class ConfigurationFileReader
@@ -9,11 +12,14 @@ public class ConfigurationFileReader
         _configurationFileReaders = configurationFileReaders.ToList();
     }
 
-    public async Task<(T? Result, string? FileName)> DeserializeAsync<T>(string fileNameWithoutExtension, string? extension = null) where T : class
+    public async Task<(T? Result, string? FileName)> DeserializeAsync<T>(
+        string fileNameWithoutExtension,
+        Func<JsonSerializerOptions, JsonSerializerContext> contextGenerator,
+        string? extension = null) where T : class
     {
         foreach (var configurationFileReader in _configurationFileReaders)
         {
-            if (await configurationFileReader.DeserializeAsync<T>(fileNameWithoutExtension, extension) is {Result: { }} result) return result;
+            if (await configurationFileReader.DeserializeAsync<T>(fileNameWithoutExtension, contextGenerator, extension) is { Result: { } } result) return result;
         }
 
         return (null, null);

@@ -1,7 +1,16 @@
 namespace Alma.Configuration.Module;
 
-public record ModuleConfiguration(string? Target, Dictionary<string, string>? Links)
+public class ModuleConfiguration
 {
+    public string? Target { get; set; }
+    public Dictionary<string, string>? Links { get; set; }
+
+    public ModuleConfiguration(string? target, Dictionary<string, string>? links)
+    {
+        Target = target;
+        Links = links;
+    }
+
     public ModuleConfiguration Merge(ModuleConfiguration merge)
     {
         var mergedLinks = (Links ?? new Dictionary<string, string>())

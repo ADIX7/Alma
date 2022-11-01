@@ -17,7 +17,7 @@ public class ModuleConfigurationResolver : IModuleConfigurationResolver
 
     public async Task<(ModuleConfiguration? mergedModuleConfig, string? moduleConfigFileName)> ResolveModuleConfiguration(string moduleConfigStub)
     {
-        var (moduleConfigRoot, moduleConfigFileName) = await _configurationFileReader.DeserializeAsync<ModuleConfigurationRoot>(moduleConfigStub);
+        (ModuleConfigurationRoot? moduleConfigRoot, string? moduleConfigFileName) = await _configurationFileReader.DeserializeAsync<ModuleConfigurationRoot>(moduleConfigStub, (o )=> new JsonSourceGenerationContext(o));
 
         if (moduleConfigRoot is null) return (null, null);
 

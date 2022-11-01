@@ -24,7 +24,7 @@ public class RepositoryConfiguration : IRepositoryConfiguration
         }
 
         var repoConfigFileNameStub = Path.Combine(_folderService.ConfigRoot, "repository");
-        var (configuration, repoConfigFileName) = await _configurationFileReader.DeserializeAsync<RepositoryConfigurationRoot>(repoConfigFileNameStub);
+        var (configuration, repoConfigFileName) = await _configurationFileReader.DeserializeAsync<RepositoryConfigurationRoot>(repoConfigFileNameStub, (o) => new JsonSourceGenerationContext(o));
         Configuration = configuration ?? new RepositoryConfigurationRoot(new List<RepositoryConfigurationEntry>());
 
         foreach (var repositoryConfigurationEntry in Configuration.Repositories)

@@ -30,13 +30,15 @@ public class ListCommand : ICommand
         }
     }
 
-    private async Task ListRepositories()
+    private Task ListRepositories()
     {
         Console.WriteLine("Repositories:" + Environment.NewLine);
         foreach (var repository in _repositoryConfiguration.Configuration.Repositories)
         {
             Console.WriteLine(repository.Name);
         }
+
+        return Task.CompletedTask;
     }
 
     private async Task ListModulesByRepoName(string repositoryName)
@@ -61,7 +63,7 @@ public class ListCommand : ICommand
     {
         var repositoryDirectory = new DirectoryInfo(repositoryPath);
         var moduleDirectories = await TraverseRepositoryFolder(repositoryDirectory);
-        
+
         Console.WriteLine($"Modules in repository '{repositoryName}':" + Environment.NewLine);
         foreach (var modulePath in moduleDirectories)
         {
