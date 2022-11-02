@@ -67,19 +67,19 @@ public class ListCommand : ICommand
         Console.WriteLine($"Modules in repository '{repositoryName}':" + Environment.NewLine);
         foreach (var modulePath in moduleDirectories)
         {
-            Console.WriteLine(modulePath.FullName.Substring(repositoryDirectory.FullName.Length).Replace(Path.DirectorySeparatorChar, '/'));
+            Console.WriteLine(modulePath.FullName[repositoryDirectory.FullName.Length..].TrimStart(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar, '/'));
         }
     }
 
     private async Task<IEnumerable<DirectoryInfo>> TraverseRepositoryFolder(DirectoryInfo currentDirectory)
     {
         var moduleConfigFileStub = Path.Combine(currentDirectory.FullName, Constants.ModuleConfigFileStub);
-        var (moduleConfiguration, moduleConfigurationFile) = await _moduleConfigurationResolver.ResolveModuleConfiguration(moduleConfigFileStub);
+        var (_, moduleConfigurationFile) = await _moduleConfigurationResolver.ResolveModuleConfiguration(moduleConfigFileStub);
 
         var result = Enumerable.Empty<DirectoryInfo>();
         if (moduleConfigurationFile is not null)
         {
-            result = new List<DirectoryInfo> {currentDirectory};
+            result = new List<DirectoryInfo> { currentDirectory };
         }
 
         foreach (var subDir in currentDirectory.GetDirectories())

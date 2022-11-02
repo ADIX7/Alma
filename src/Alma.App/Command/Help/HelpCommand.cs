@@ -18,7 +18,7 @@ public class HelpCommand : ICommand
         {
             Console.WriteLine(command.CommandString);
         }
-        
+
         return Task.CompletedTask;
     }
 }
