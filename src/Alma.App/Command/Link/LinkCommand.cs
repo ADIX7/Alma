@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Alma.Configuration.Module;
 using Alma.Configuration.Repository;
 using Alma.Data;
@@ -86,47 +87,54 @@ public class LinkCommand : ICommand
             moduleConfiguration)).ToList();
         if (moduleConfigurationFile is not null) itemsToLink.RemoveAll(i => i.SourcePath == moduleConfigurationFileFullPath);
 
-        foreach (var itemToLink in itemsToLink)
-        {
-            Console.WriteLine($"Link: '{itemToLink.SourcePath}' '{itemToLink.TargetPath}'");
-        }
-
         var successfulLinks = CreateLinks(itemsToLink);
 
         await _metadataHandler.SaveLinkedItemsAsync(successfulLinks, moduleDir, currentTargetDirectory);
-        //await _metadataHandler.SaveLinkedItemsAsync(itemsToLink, moduleDir, currentTargetDirectory);
     }
 
     private List<ItemToLink> CreateLinks(List<ItemToLink> itemsToLink)
     {
         var successfulLinks = new List<ItemToLink>();
 
-        foreach (var itemToLink in itemsToLink)
+        try
         {
-            if (File.Exists(itemToLink.TargetPath) || Directory.Exists(itemToLink.TargetPath))
+            foreach (var itemToLink in itemsToLink)
             {
-                Console.WriteLine("Item already exists: " + itemToLink.TargetPath);
-                continue;
-            }
+                if (File.Exists(itemToLink.TargetPath) || Directory.Exists(itemToLink.TargetPath))
+                {
+                    Console.WriteLine("Item already exists: " + itemToLink.TargetPath);
+                    continue;
+                }
 
-            var sourceFileExists = File.Exists(itemToLink.SourcePath);
-            var sourceDirectoryExists = Directory.Exists(itemToLink.SourcePath);
+                var sourceFileExists = File.Exists(itemToLink.SourcePath);
+                var sourceDirectoryExists = Directory.Exists(itemToLink.SourcePath);
 
-            if (sourceFileExists)
-            {
-                File.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
-            }
-            else if (sourceDirectoryExists)
-            {
-                File.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
-            }
-            else
-            {
-                Console.WriteLine("Source not exists: " + itemToLink.SourcePath);
-                continue;
-            }
+                Console.WriteLine($"Linking: '{itemToLink.SourcePath}' '{itemToLink.TargetPath}'");
 
-            successfulLinks.Add(itemToLink);
+                if (sourceFileExists)
+                {
+                    File.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
+                }
+                else if (sourceDirectoryExists)
+                {
+                    Directory.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
+                }
+                else
+                {
+                    Console.WriteLine("Source not exists: " + itemToLink.SourcePath);
+                    continue;
+                }
+
+                successfulLinks.Add(itemToLink);
+            }
+        }
+        catch (IOException e)
+        {
+            Console.WriteLine("An error occured while creating links: " + e.Message);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Console.WriteLine("On Windows symlinks can be greated only with Administrator privileges.");
+            }
         }
 
         return successfulLinks;
