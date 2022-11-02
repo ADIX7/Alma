@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Alma.App\Alma.App.csproj" />
+    <ProjectReference Include="..\Alma.Logging\Alma.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

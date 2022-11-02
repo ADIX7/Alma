@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Alma.Abstraction\Alma.Abstraction.csproj" />
+    <ProjectReference Include="..\Alma.Logging\Alma.Logging.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

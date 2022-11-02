@@ -1,5 +1,6 @@
 using Alma.Configuration.Repository;
 using Alma.Data;
+using Alma.Logging;
 using Alma.Services;
 
 namespace Alma.Command.List;
@@ -8,14 +9,18 @@ public class ListCommand : ICommand
 {
     private readonly IRepositoryConfiguration _repositoryConfiguration;
     private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
+    private readonly ILogger<ListCommand> _logger;
+
     public string CommandString => "ls";
 
     public ListCommand(
         IRepositoryConfiguration repositoryConfiguration,
-        IModuleConfigurationResolver moduleConfigurationResolver)
+        IModuleConfigurationResolver moduleConfigurationResolver,
+        ILogger<ListCommand> logger)
     {
         _repositoryConfiguration = repositoryConfiguration;
         _moduleConfigurationResolver = moduleConfigurationResolver;
+        _logger = logger;
     }
 
     public async Task Run(List<string> parameters)
@@ -32,10 +37,10 @@ public class ListCommand : ICommand
 
     private Task ListRepositories()
     {
-        Console.WriteLine("Repositories:" + Environment.NewLine);
+        _logger.LogInformation("Repositories");
         foreach (var repository in _repositoryConfiguration.Configuration.Repositories)
         {
-            Console.WriteLine(repository.Name);
+            _logger.LogInformation(repository.Name);
         }
 
         return Task.CompletedTask;
@@ -46,13 +51,13 @@ public class ListCommand : ICommand
         var repo = _repositoryConfiguration.Configuration.Repositories.FirstOrDefault(r => r.Name == repositoryName);
         if (repo is null)
         {
-            Console.WriteLine($"No repository found with name '{repositoryName}'");
+            _logger.LogInformation($"No repository found with name '{repositoryName}'");
             return;
         }
 
         if (repo.RepositoryPath is null)
         {
-            Console.WriteLine($"No repository path is specified in repository settings '{repositoryName}'");
+            _logger.LogInformation($"No repository path is specified in repository settings '{repositoryName}'");
             return;
         }
 
@@ -64,10 +69,10 @@ public class ListCommand : ICommand
         var repositoryDirectory = new DirectoryInfo(repositoryPath);
         var moduleDirectories = await TraverseRepositoryFolder(repositoryDirectory);
 
-        Console.WriteLine($"Modules in repository '{repositoryName}':" + Environment.NewLine);
+        _logger.LogInformation($"Modules in repository '{repositoryName}'");
         foreach (var modulePath in moduleDirectories)
         {
-            Console.WriteLine(modulePath.FullName[repositoryDirectory.FullName.Length..].TrimStart(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar, '/'));
+            _logger.LogInformation(modulePath.FullName[repositoryDirectory.FullName.Length..].TrimStart(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar, '/'));
         }
     }
 

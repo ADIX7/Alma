@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Alma.Configuration.Module;
 using Alma.Configuration.Repository;
 using Alma.Data;
+using Alma.Logging;
 using Alma.Services;
 
 namespace Alma.Command.Link;
@@ -10,27 +11,28 @@ public class LinkCommand : ICommand
 {
     private readonly IRepositoryConfiguration _repositoryConfiguration;
     private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
-    private readonly IFolderService _folderService;
     private readonly IMetadataHandler _metadataHandler;
+    private readonly ILogger<LinkCommand> _logger;
+
     public string CommandString => "link";
 
     public LinkCommand(
         IRepositoryConfiguration repositoryConfiguration,
         IModuleConfigurationResolver moduleConfigurationResolver,
-        IFolderService folderService,
-        IMetadataHandler metadataHandler)
+        IMetadataHandler metadataHandler,
+        ILogger<LinkCommand> logger)
     {
         _repositoryConfiguration = repositoryConfiguration;
         _moduleConfigurationResolver = moduleConfigurationResolver;
-        _folderService = folderService;
         _metadataHandler = metadataHandler;
+        _logger = logger;
     }
 
     public async Task Run(List<string> parameters)
     {
         if (parameters.Count == 0)
         {
-            Console.WriteLine("No module specified");
+            _logger.LogInformation("No module specified");
             return;
         }
 
@@ -49,7 +51,7 @@ public class LinkCommand : ICommand
 
         if (!Directory.Exists(sourceDirectory))
         {
-            Console.WriteLine("Source directory not exists: " + sourceDirectory);
+            _logger.LogInformation("Source directory not exists: " + sourceDirectory);
             return;
         }
 
@@ -58,7 +60,7 @@ public class LinkCommand : ICommand
 
         if (!Directory.Exists(moduleDirectory))
         {
-            Console.WriteLine("Module directory not exists: " + moduleDirectory);
+            _logger.LogInformation("Module directory not exists: " + moduleDirectory);
             return;
         }
 
@@ -102,14 +104,14 @@ public class LinkCommand : ICommand
             {
                 if (File.Exists(itemToLink.TargetPath) || Directory.Exists(itemToLink.TargetPath))
                 {
-                    Console.WriteLine("Item already exists: " + itemToLink.TargetPath);
+                    _logger.LogInformation("Item already exists: " + itemToLink.TargetPath);
                     continue;
                 }
 
                 var sourceFileExists = File.Exists(itemToLink.SourcePath);
                 var sourceDirectoryExists = Directory.Exists(itemToLink.SourcePath);
 
-                Console.WriteLine($"Linking: '{itemToLink.SourcePath}' '{itemToLink.TargetPath}'");
+                _logger.LogInformation($"Linking: '{itemToLink.SourcePath}' '{itemToLink.TargetPath}'");
 
                 if (sourceFileExists)
                 {
@@ -121,7 +123,7 @@ public class LinkCommand : ICommand
                 }
                 else
                 {
-                    Console.WriteLine("Source not exists: " + itemToLink.SourcePath);
+                    _logger.LogInformation("Source not exists: " + itemToLink.SourcePath);
                     continue;
                 }
 
@@ -130,10 +132,10 @@ public class LinkCommand : ICommand
         }
         catch (IOException e)
         {
-            Console.WriteLine("An error occured while creating links: " + e.Message);
+            _logger.LogInformation("An error occured while creating links: " + e.Message);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Console.WriteLine("On Windows symlinks can be greated only with Administrator privileges.");
+                _logger.LogInformation("On Windows symlinks can be greated only with Administrator privileges.");
             }
         }
 

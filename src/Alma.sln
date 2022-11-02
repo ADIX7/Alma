@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alma.App", "Alma.App\Alma.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alma", "Alma\Alma.csproj", "{23157A6F-C737-4ED4-B36B-BFE3EA31EAF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alma.Logging", "Alma.Logging\Alma.Logging.csproj", "{295330FF-A52A-4BA5-8CC0-BD7D4F048171}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{23157A6F-C737-4ED4-B36B-BFE3EA31EAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23157A6F-C737-4ED4-B36B-BFE3EA31EAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23157A6F-C737-4ED4-B36B-BFE3EA31EAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{295330FF-A52A-4BA5-8CC0-BD7D4F048171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{295330FF-A52A-4BA5-8CC0-BD7D4F048171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{295330FF-A52A-4BA5-8CC0-BD7D4F048171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{295330FF-A52A-4BA5-8CC0-BD7D4F048171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

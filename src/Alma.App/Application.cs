@@ -1,22 +1,25 @@
 ﻿using Alma.Command;
 using Alma.Command.Help;
+using Alma.Logging;
 
 namespace Alma;
 
 public class Application
 {
     private readonly IList<ICommand> _commands;
+    private readonly ILogger<Application> _logger;
 
-    public Application(IEnumerable<ICommand> commands)
+    public Application(IEnumerable<ICommand> commands, ILogger<Application> logger, ILogger<HelpCommand> helpCommandLogger)
     {
-        _commands = commands.Append(new HelpCommand(() => _commands!)).ToList();
+        _commands = commands.Append(new HelpCommand(() => _commands!, helpCommandLogger)).ToList();
+        _logger = logger;
     }
 
     public async Task Run(string[] args)
     {
         if (args.Length == 0)
         {
-            Console.WriteLine("No command was given");
+            _logger.LogInformation("No command was given");
             return;
         }
 
@@ -26,7 +29,7 @@ public class Application
 
         if (command is null)
         {
-            Console.WriteLine($"Invalid command: {commandString}");
+            _logger.LogInformation($"Invalid command: {commandString}");
             return;
         }
 

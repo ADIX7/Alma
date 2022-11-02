@@ -1,10 +1,10 @@
 ﻿using Alma.Command;
-using Alma.Command.Help;
 using Alma.Command.Info;
 using Alma.Command.Link;
 using Alma.Command.List;
 using Alma.Command.Unlink;
 using Alma.Configuration.Repository;
+using Alma.Logging;
 using Alma.Services;
 using Jab;
 
@@ -50,6 +50,8 @@ public static class Program
 
     public static async Task Main(string[] args)
     {
+        InitLogging();
+
         var services = new AlmaServiceProvider();
 
         var repositoryConfiguration = services.GetService<IRepositoryConfiguration>();
@@ -58,6 +60,15 @@ public static class Program
 
         await application.Run(args);
     }
+
+    private static ILoggerFactory InitLogging()
+    {
+        var loggerFactory = new LoggerFactory();
+
+        return AlmaLoggerFactory = loggerFactory;
+    }
+
+    public static ILoggerFactory AlmaLoggerFactory { get; private set; }
 }
 
 [ServiceProvider]
@@ -75,7 +86,11 @@ public static class Program
 [Singleton(typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver))]
 [Singleton(typeof(IMetadataHandler), typeof(MetadataHandler))]
 [Singleton(typeof(Application))]
+[Transient(typeof(ILogger<>), Factory = nameof(CustomLoggerFactory))]
 internal partial class AlmaServiceProvider
 {
-
+    public ILogger<T> CustomLoggerFactory<T>()
+    {
+        return Program.AlmaLoggerFactory.CreateLogger<T>();
+    }
 }

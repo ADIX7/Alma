@@ -1,3 +1,4 @@
+using Alma.Logging;
 using Alma.Services;
 
 namespace Alma.Configuration.Repository;
@@ -6,13 +7,19 @@ public class RepositoryConfiguration : IRepositoryConfiguration
 {
     private readonly IFolderService _folderService;
     private readonly ConfigurationFileReader _configurationFileReader;
+    private readonly ILogger<RepositoryConfiguration> _logger;
 
     public RepositoryConfigurationRoot Configuration { get; private set; } = new RepositoryConfigurationRoot(new List<RepositoryConfigurationEntry>());
 
-    public RepositoryConfiguration(IFolderService folderService, ConfigurationFileReader configurationFileReader)
+    public RepositoryConfiguration(
+        IFolderService folderService,
+        ConfigurationFileReader configurationFileReader,
+        ILogger<RepositoryConfiguration> logger
+    )
     {
         _folderService = folderService;
         _configurationFileReader = configurationFileReader;
+        _logger = logger;
     }
 
     public async Task LoadAsync()
@@ -31,7 +38,7 @@ public class RepositoryConfiguration : IRepositoryConfiguration
         {
             if (repositoryConfigurationEntry.Name is null)
             {
-                Console.WriteLine($"Entry name is null in {repoConfigFileName}");
+                _logger.LogInformation($"Entry name is null in {repoConfigFileName}");
             }
         }
     }
