@@ -191,7 +191,8 @@ public class LinkCommand : ICommand
     {
         if (path.StartsWith("~"))
         {
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), path.Substring(2));
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            path = path.Length > 1 ? Path.Combine(userProfile, path[2..]) : userProfile;
         }
 
         //TODO: more special character
@@ -199,5 +200,5 @@ public class LinkCommand : ICommand
         return Path.Combine(currentDirectory, path);
     }
 
-    private static string GetRelativePath(string full, string parent) => full.Substring(parent.Length).TrimStart(Path.DirectorySeparatorChar);
+    private static string GetRelativePath(string full, string parent) => full[parent.Length..].TrimStart(Path.DirectorySeparatorChar);
 }
