@@ -1,5 +1,6 @@
 ﻿using Alma.Command;
 using Alma.Command.Info;
+using Alma.Command.Install;
 using Alma.Command.Link;
 using Alma.Command.List;
 using Alma.Command.Unlink;
@@ -12,42 +13,6 @@ namespace Alma;
 
 public static class Program
 {
-    /*public static async Task Main(string[] args)
-    {
-        var services = BuildServices();
-
-        var repositoryConfiguration = services.GetRequiredService<IRepositoryConfiguration>();
-        await repositoryConfiguration.LoadAsync();
-        var application = services.GetRequiredService<Application>();
-
-        await application.Run(args);
-
-        static IServiceProvider BuildServices()
-        {
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddSingleton<IRepositoryConfiguration, RepositoryConfiguration>();
-            serviceCollection.AddSingleton<IFolderService, FolderService>();
-            serviceCollection.AddSingleton<ConfigurationFileReader>();
-            serviceCollection.AddSingleton<IConfigurationFileReader, JsonConfigurationFileReader>();
-            serviceCollection.AddSingleton<IOsInformation, OsInformation>();
-            serviceCollection.AddSingleton<ICommand, LinkCommand>();
-            serviceCollection.AddSingleton<IModuleConfigurationResolver, ModuleConfigurationResolver>();
-            serviceCollection.AddSingleton<Application>();
-
-            typeof(IRepositoryConfiguration), typeof(RepositoryConfiguration)
-            typeof(IFolderService), typeof(FolderService)
-            typeof(ConfigurationFileReader)
-            typeof(IConfigurationFileReader), typeof(JsonConfigurationFileReader)
-            typeof(IOsInformation), typeof(OsInformation)
-            typeof(ICommand), typeof(LinkCommand)
-            typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver)
-            typeof(Application)
-
-            return serviceCollection.BuildServiceProvider();
-        }
-    }*/
-
     public static async Task Main(string[] args)
     {
         InitLogging();
@@ -61,14 +26,12 @@ public static class Program
         await application.Run(args);
     }
 
-    private static ILoggerFactory InitLogging()
+    private static void InitLogging()
     {
-        var loggerFactory = new LoggerFactory();
-
-        return AlmaLoggerFactory = loggerFactory;
+        AlmaLoggerFactory = new LoggerFactory();
     }
 
-    public static ILoggerFactory AlmaLoggerFactory { get; private set; }
+    public static ILoggerFactory AlmaLoggerFactory { get; private set; } = null!;
 }
 
 [ServiceProvider]
@@ -79,12 +42,14 @@ public static class Program
 [Singleton(typeof(IOsInformation), typeof(OsInformation))]
 [Singleton(typeof(ICommand), typeof(LinkCommand))]
 [Singleton(typeof(ICommand), typeof(UnlinkCommand))]
-[Singleton(typeof(ICommand), typeof(ModuleInfoCommand))]
+[Singleton(typeof(ICommand), typeof(InfoCommand))]
 [Singleton(typeof(ICommand), typeof(ListCommand))]
+[Singleton(typeof(ICommand), typeof(InstallCommand))]
 //Dependency cycle
 //[Singleton(typeof(ICommand), typeof(HelpCommand))]
 [Singleton(typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver))]
 [Singleton(typeof(IMetadataHandler), typeof(MetadataHandler))]
+[Singleton(typeof(IShellService), typeof(ShellService))]
 [Singleton(typeof(Application))]
 [Transient(typeof(ILogger<>), Factory = nameof(CustomLoggerFactory))]
 internal partial class AlmaServiceProvider

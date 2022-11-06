@@ -21,7 +21,10 @@ public class ModuleConfigurationResolver : IModuleConfigurationResolver
 
         if (moduleConfigRoot is null) return (null, null);
 
-        var validModuleConfigurations = moduleConfigRoot.Where(m => _osInformation.IsOnPlatform(m.Key));
+        var validModuleConfigurations = await moduleConfigRoot
+            .ToAsyncEnumerable()
+            .WhereAwait(async m => await _osInformation.IsOnPlatformAsync(m.Key))
+            .ToListAsync();
 
         //TODO: priority order
         var orderedValidModuleConfigurations = new Dictionary<string, ModuleConfiguration>(validModuleConfigurations);

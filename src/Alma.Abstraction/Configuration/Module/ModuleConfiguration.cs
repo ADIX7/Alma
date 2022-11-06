@@ -5,10 +5,13 @@ public class ModuleConfiguration
     public string? Target { get; set; }
     public Dictionary<string, string>? Links { get; set; }
 
-    public ModuleConfiguration(string? target, Dictionary<string, string>? links)
+    public string? Install { get; set; }
+
+    public ModuleConfiguration(string? target, Dictionary<string, string>? links, string? install)
     {
         Target = target;
         Links = links;
+        Install = install;
     }
 
     public ModuleConfiguration Merge(ModuleConfiguration merge)
@@ -17,10 +20,11 @@ public class ModuleConfiguration
             .Concat(merge.Links ?? new Dictionary<string, string>());
         return new ModuleConfiguration(
             merge.Target ?? Target,
-            new Dictionary<string, string>(mergedLinks)
+            new Dictionary<string, string>(mergedLinks),
+            merge.Install ?? Install
         );
     }
 
     public static ModuleConfiguration Empty() =>
-        new(null, new Dictionary<string, string>());
+        new(null, new Dictionary<string, string>(), null);
 }

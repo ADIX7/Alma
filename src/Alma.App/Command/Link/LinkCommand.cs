@@ -7,20 +7,21 @@ using Alma.Services;
 
 namespace Alma.Command.Link;
 
-public class LinkCommand : ICommand
+public class LinkCommand : RepositoryModuleCommandBase
 {
     private readonly IRepositoryConfiguration _repositoryConfiguration;
     private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
     private readonly IMetadataHandler _metadataHandler;
     private readonly ILogger<LinkCommand> _logger;
 
-    public string CommandString => "link";
+    public override string CommandString => "link";
 
     public LinkCommand(
         IRepositoryConfiguration repositoryConfiguration,
         IModuleConfigurationResolver moduleConfigurationResolver,
         IMetadataHandler metadataHandler,
         ILogger<LinkCommand> logger)
+        : base(repositoryConfiguration)
     {
         _repositoryConfiguration = repositoryConfiguration;
         _moduleConfigurationResolver = moduleConfigurationResolver;
@@ -28,26 +29,19 @@ public class LinkCommand : ICommand
         _logger = logger;
     }
 
-    public async Task Run(List<string> parameters)
+    public override async Task Run(List<string> parameters)
     {
-        if (parameters.Count == 0)
+        var (repoName, moduleName) = GetRepositoryAndModuleName(parameters);
+        if (moduleName is null)
         {
             _logger.LogInformation("No module specified");
             return;
         }
 
-        string moduleName = parameters[0];
-
         string sourceDirectory = Path.Combine(Environment.CurrentDirectory);
         string targetDirectory = Path.Combine(Environment.CurrentDirectory, "..");
 
-        var repoName = GetRepositoryName(parameters);
-        if (repoName is not null
-            && _repositoryConfiguration.Configuration.Repositories.FirstOrDefault(r => r.Name == repoName) is { } repoConfig)
-        {
-            sourceDirectory = repoConfig.RepositoryPath ?? sourceDirectory;
-            targetDirectory = repoConfig.LinkPath ?? targetDirectory;
-        }
+        (sourceDirectory, targetDirectory) = GetModuleSourceAndTargetDirectory(repoName, sourceDirectory, targetDirectory);
 
         if (!Directory.Exists(sourceDirectory))
         {
@@ -178,13 +172,6 @@ public class LinkCommand : ICommand
         }
 
         return filesToLink.Concat(subDirLinksToAdd);
-    }
-
-    private static string? GetRepositoryName(List<string> parameters)
-    {
-        //TODO: handle parameters
-        if (parameters.Count < 2) return null;
-        return parameters[1];
     }
 
     private static string ResolvePath(string path, string currentDirectory)

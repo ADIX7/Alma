@@ -4,47 +4,52 @@ using Alma.Services;
 
 namespace Alma.Command.Info;
 
-public class ModuleInfoCommand : ICommand
+public class InfoCommand : ICommand
 {
     public string CommandString => "info";
 
     private readonly IFolderService _folderService;
     private readonly IRepositoryConfiguration _repositoryConfiguration;
-    private readonly ILogger<ModuleInfoCommand> _logger;
+    private readonly ILogger<InfoCommand> _logger;
+    private readonly IOsInformation _osInformation;
 
-    public ModuleInfoCommand(
+    public InfoCommand(
         IFolderService folderService,
         IRepositoryConfiguration repositoryConfiguration,
-        ILogger<ModuleInfoCommand> logger
+        ILogger<InfoCommand> logger,
+        IOsInformation osInformation
     )
     {
         _folderService = folderService;
         _repositoryConfiguration = repositoryConfiguration;
         _logger = logger;
+        _osInformation = osInformation;
     }
 
-    public Task Run(List<string> parameters)
+    public async Task Run(List<string> parameters)
     {
         //Add info REPO
         //Add info REPO MODULE
         _logger.LogInformation("AppData folder: " + _folderService.AppData);
 
-        if (_folderService.ConfigRoot is string configRoot)
+        if (_folderService.ConfigRoot is { } configRoot)
         {
             _logger.LogInformation("Configuration folder: " + configRoot);
         }
         else
         {
             _logger.LogInformation("Configuration folder not exists.");
-            _logger.LogInformation("Preffered configuration folder is: " + Path.Combine(_folderService.GetPreferredConfigurationFolder(), _folderService.ApplicationSubfolderName));
+            _logger.LogInformation("Preferred configuration folder is: " + Path.Combine(_folderService.GetPreferredConfigurationFolder(), _folderService.ApplicationSubfolderName));
         }
 
         _logger.LogInformation("");
+        _logger.LogInformation($"Platform is '{await _osInformation.GetOsIdentifierAsync()}'");
+        _logger.LogInformation("");
 
-        if (_repositoryConfiguration.Configuration.Repositories is var repositores && repositores?.Count > 0)
+        if (_repositoryConfiguration.Configuration.Repositories is {Count: > 0} repositories)
         {
             _logger.LogInformation("Repositories:");
-            foreach (var repository in repositores)
+            foreach (var repository in repositories)
             {
                 Console.Write(repository.Name);
                 if (repository.RepositoryPath is not null && !Directory.Exists(repository.RepositoryPath))
@@ -58,7 +63,5 @@ public class ModuleInfoCommand : ICommand
         {
             _logger.LogInformation("No repositories found");
         }
-
-        return Task.CompletedTask;
     }
 }

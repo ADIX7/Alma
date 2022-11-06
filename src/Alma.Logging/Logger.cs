@@ -22,4 +22,14 @@ public class Logger<T> : ILogger<T>
             Console.WriteLine(s);
         }
     }
+
+    public void LogError(string logMessage)
+    {
+        Log(logMessage, LogLevel.Error);
+    }
+
+    public void LogCritical(string logMessage)
+    {
+        Log(logMessage, LogLevel.Critical);
+    }
 }
