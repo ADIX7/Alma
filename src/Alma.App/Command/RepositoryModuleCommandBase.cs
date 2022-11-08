@@ -1,4 +1,5 @@
 using Alma.Configuration.Repository;
+using Alma.Helper;
 
 namespace Alma.Command;
 
@@ -12,7 +13,7 @@ public abstract class RepositoryModuleCommandBase : ICommand
     {
         _repositoryConfiguration = repositoryConfiguration;
     }
-    
+
     protected (string?, string?) GetRepositoryAndModuleName(List<string> parameters)
     {
         //TODO: handle parameters
@@ -37,8 +38,14 @@ public abstract class RepositoryModuleCommandBase : ICommand
         if (repoName is not null
             && _repositoryConfiguration.Configuration.Repositories.FirstOrDefault(r => r.Name == repoName) is { } repoConfig)
         {
-            fallbackSourceDirectory = repoConfig.RepositoryPath ?? fallbackSourceDirectory;
-            fallbackTargetDirectory = repoConfig.LinkPath ?? fallbackTargetDirectory;
+            fallbackSourceDirectory =
+                repoConfig.RepositoryPath is { } repoPath
+                    ? PathHelper.ResolvePath(repoPath)
+                    : fallbackSourceDirectory;
+            fallbackTargetDirectory =
+                repoConfig.LinkPath is { } linkPath
+                    ? PathHelper.ResolvePath(linkPath)
+                    : fallbackTargetDirectory;
         }
 
         return (fallbackSourceDirectory, fallbackTargetDirectory);

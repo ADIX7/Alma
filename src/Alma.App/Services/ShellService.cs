@@ -15,38 +15,66 @@ public class ShellService : IShellService
 
     public async Task RunCommandAsync(string command)
     {
+        Process? process;
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            var processStartInfo = new ProcessStartInfo()
-            {
-                FileName = "sh",
-                ArgumentList = {"-c", command},
-                RedirectStandardOutput = true,
-                RedirectStandardInput = true,
-                CreateNoWindow = true,
-                UseShellExecute = false
-            };
-
-            var process = Process.Start(processStartInfo);
-            if (process is null) return;
-
-            var reader = process.StandardOutput;
-            while (!reader.EndOfStream)
-            {
-                var content = await reader.ReadLineAsync();
-
-                if (content is not null)
-                {
-                    _logger.LogInformation(content);
-                }
-            }
-
-            await process.WaitForExitAsync();
-            return;
+            process = CreateLinuxShell(command);
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            process = CreateWindowsShell(command);
+        }
+        else
+        {
+            _logger.LogError("Platform not supported");
+            throw new NotSupportedException();
         }
 
-        _logger.LogError("Platform not supported");
+        if (!process.Start()) return;
 
-        throw new NotSupportedException();
+        var reader = process.StandardOutput;
+        while (!reader.EndOfStream)
+        {
+            var content = await reader.ReadLineAsync();
+
+            if (content is not null)
+            {
+                _logger.LogInformation(content);
+            }
+        }
+
+        await process.WaitForExitAsync();
+    }
+
+    private Process CreateLinuxShell(string command)
+    {
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "sh",
+            ArgumentList = {"-c", command},
+            RedirectStandardOutput = true,
+            RedirectStandardInput = true,
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        return new Process {StartInfo = processStartInfo};
+    }
+
+    private Process CreateWindowsShell(string command)
+    {
+        var processStartInfo = new ProcessStartInfo
+        {
+            //TODO: customizable shell
+            FileName = "pwsh",
+            ArgumentList = {"-c", command},
+            RedirectStandardOutput = true,
+            RedirectStandardInput = true,
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        return new Process {StartInfo = processStartInfo};
     }
 }

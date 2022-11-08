@@ -1,4 +1,5 @@
 using Alma.Configuration.Repository;
+using Alma.Helper;
 using Alma.Logging;
 using Alma.Services;
 
@@ -52,7 +53,7 @@ public class InfoCommand : ICommand
             foreach (var repository in repositories)
             {
                 Console.Write(repository.Name);
-                if (repository.RepositoryPath is not null && !Directory.Exists(repository.RepositoryPath))
+                if (repository.RepositoryPath is not null && !Directory.Exists(PathHelper.ResolvePath(repository.RepositoryPath)))
                 {
                     Console.Write($" (containing folder not exists {repository.RepositoryPath})");
                 }

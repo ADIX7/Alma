@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Alma.Configuration.Module;
 using Alma.Configuration.Repository;
 using Alma.Data;
+using Alma.Helper;
 using Alma.Logging;
 using Alma.Services;
 
@@ -63,7 +64,7 @@ public class LinkCommand : RepositoryModuleCommandBase
 
         if (moduleConfiguration?.Target is string moduleTargetDir)
         {
-            targetDirectory = ResolvePath(moduleTargetDir, targetDirectory);
+            targetDirectory = PathHelper.ResolvePath(moduleTargetDir, targetDirectory);
         }
 
         if (!Directory.Exists(targetDirectory))
@@ -156,7 +157,7 @@ public class LinkCommand : RepositoryModuleCommandBase
             var relativePath = GetRelativePath(subDir.FullName, moduleDirectory.FullName);
             if (moduleConfiguration?.Links?.ContainsKey(relativePath) ?? false)
             {
-                filesToLink.Add(new ItemToLink(subDir.FullName, ResolvePath(moduleConfiguration.Links[relativePath], targetDirectory.FullName)));
+                filesToLink.Add(new ItemToLink(subDir.FullName, PathHelper.ResolvePath(moduleConfiguration.Links[relativePath], targetDirectory.FullName)));
             }
             else
             {
@@ -172,19 +173,6 @@ public class LinkCommand : RepositoryModuleCommandBase
         }
 
         return filesToLink.Concat(subDirLinksToAdd);
-    }
-
-    private static string ResolvePath(string path, string currentDirectory)
-    {
-        if (path.StartsWith("~"))
-        {
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            path = path.Length > 1 ? Path.Combine(userProfile, path[2..]) : userProfile;
-        }
-
-        //TODO: more special character
-
-        return Path.Combine(currentDirectory, path);
     }
 
     private static string GetRelativePath(string full, string parent) => full[parent.Length..].TrimStart(Path.DirectorySeparatorChar);

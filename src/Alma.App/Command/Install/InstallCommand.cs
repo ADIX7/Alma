@@ -47,7 +47,7 @@ public class InstallCommand : RepositoryModuleCommandBase
 
         if (moduleConfiguration is null)
         {
-            _logger.LogInformation("No module configuration found.");
+            _logger.LogInformation($"No module configuration found for module '{moduleName}'{(repoName is null ? "" : $" in repository '{repoName}'")}");
             return;
         }
 
