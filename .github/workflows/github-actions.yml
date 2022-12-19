@@ -1,6 +1,9 @@
 name: Alma build
 
-on: [push]
+on:
+  push:
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -26,6 +29,7 @@ jobs:
           dotnet-version: '7.0.x'
       - name: Patch version
         run: ${{ matrix.target.version_script }}
+        continue-on-error: true
       - name: Restore dependencies
         run: dotnet restore src/Alma
       - name: Build
