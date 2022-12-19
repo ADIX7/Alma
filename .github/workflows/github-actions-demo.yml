@@ -1,0 +1,24 @@
+name: Alma build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      matrix:
+        target:
+          - triple: x86_64-pc-windows-gnu
+            runner: windows-latest
+          - triple: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      - name: Install dependencies
+        run: dotnet restore src/Alma
+      - name: Build
+        run: dotnet build src/Alma
