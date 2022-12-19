@@ -27,4 +27,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: alma-${{ matrix.target.name }}
-          path: app/
+          path: app/Alma
