@@ -11,9 +11,11 @@ jobs:
           - runtime: win-x64
             runner: windows-latest
             name: windows
+            outputname: Alma.exe
           - runtime: linux-x64
             runner: ubuntu-latest
             name: linux
+            outputname: Alma
     steps:
       - uses: actions/checkout@v3
       - name: Setup dotnet
@@ -27,7 +29,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: alma-${{ matrix.target.name }}
-          path: app/Alma
+          path: app/${{ matrix.target.outputname }}
   
   release:
     needs: build
