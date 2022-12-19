@@ -10,11 +10,11 @@ public class HelpCommand : ICommand
     public string CommandString => "help";
 
     public HelpCommand(
-        Func<IEnumerable<ICommand>> commandsProvider,
+        IServiceProvider serviceProvider,
         ILogger<HelpCommand> logger
     )
     {
-        _commandsProvider = commandsProvider;
+        _commandsProvider = () => (IEnumerable<ICommand>?)serviceProvider.GetService(typeof(IEnumerable<ICommand>)) ?? throw new ApplicationException();
         _logger = logger;
     }
 

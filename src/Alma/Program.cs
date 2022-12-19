@@ -1,4 +1,5 @@
 ﻿using Alma.Command;
+using Alma.Command.Help;
 using Alma.Command.Info;
 using Alma.Command.Install;
 using Alma.Command.Link;
@@ -45,8 +46,7 @@ public static class Program
 [Singleton(typeof(ICommand), typeof(InfoCommand))]
 [Singleton(typeof(ICommand), typeof(ListCommand))]
 [Singleton(typeof(ICommand), typeof(InstallCommand))]
-//Dependency cycle
-//[Singleton(typeof(ICommand), typeof(HelpCommand))]
+[Singleton(typeof(ICommand), typeof(HelpCommand))]
 [Singleton(typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver))]
 [Singleton(typeof(IMetadataHandler), typeof(MetadataHandler))]
 [Singleton(typeof(IShellService), typeof(ShellService))]

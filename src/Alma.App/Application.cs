@@ -9,9 +9,9 @@ public class Application
     private readonly IList<ICommand> _commands;
     private readonly ILogger<Application> _logger;
 
-    public Application(IEnumerable<ICommand> commands, ILogger<Application> logger, ILogger<HelpCommand> helpCommandLogger)
+    public Application(IEnumerable<ICommand> commands, ILogger<Application> logger)
     {
-        _commands = commands.Append(new HelpCommand(() => _commands!, helpCommandLogger)).ToList();
+        _commands = commands.ToList();
         _logger = logger;
     }
 
