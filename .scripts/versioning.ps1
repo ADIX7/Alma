@@ -1,5 +1,3 @@
-gci env:\
-
 if((Get-Content env:\GITHUB_REF_TYPE) -ne "tag")
 {
     Return
@@ -12,4 +10,3 @@ Write-Host $version
 Write-Host $git_sha
 
 (Get-Content src\Alma\Alma.csproj).Replace("0.0.0", $version).Replace("development", $git_sha) | Set-Content src\Alma\Alma.csproj
-Write-Host (Get-Content src\Alma\Alma.csproj)
