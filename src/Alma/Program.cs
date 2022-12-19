@@ -50,6 +50,7 @@ public static class Program
 [Singleton(typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver))]
 [Singleton(typeof(IMetadataHandler), typeof(MetadataHandler))]
 [Singleton(typeof(IShellService), typeof(ShellService))]
+[Singleton(typeof(IVersionService), typeof(VersionService))]
 [Singleton(typeof(Application))]
 [Transient(typeof(ILogger<>), Factory = nameof(CustomLoggerFactory))]
 internal partial class AlmaServiceProvider

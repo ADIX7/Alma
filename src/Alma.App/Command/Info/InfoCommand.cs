@@ -13,24 +13,30 @@ public class InfoCommand : ICommand
     private readonly IRepositoryConfiguration _repositoryConfiguration;
     private readonly ILogger<InfoCommand> _logger;
     private readonly IOsInformation _osInformation;
+    private readonly IVersionService _versionService;
 
     public InfoCommand(
         IFolderService folderService,
         IRepositoryConfiguration repositoryConfiguration,
         ILogger<InfoCommand> logger,
-        IOsInformation osInformation
+        IOsInformation osInformation,
+        IVersionService versionService
     )
     {
         _folderService = folderService;
         _repositoryConfiguration = repositoryConfiguration;
         _logger = logger;
         _osInformation = osInformation;
+        _versionService = versionService;
     }
 
     public async Task Run(List<string> parameters)
     {
         //Add info REPO
         //Add info REPO MODULE
+        _logger.LogInformation("Alma " + _versionService.GetVersion());
+        _logger.LogInformation("");
+
         _logger.LogInformation("AppData folder: " + _folderService.AppData);
 
         if (_folderService.ConfigRoot is { } configRoot)
