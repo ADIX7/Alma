@@ -28,3 +28,19 @@ jobs:
         with:
           name: alma-${{ matrix.target.name }}
           path: app/Alma
+  
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: alma-windows
+          path: app/windows/
+      - uses: actions/download-artifact@v3
+        with:
+          name: alma-linux
+          path: app/linux/
+    
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: app
