@@ -36,14 +36,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
+        name: Download Windows artifacts
         with:
           name: alma-windows
           path: app/windows/
       - uses: actions/download-artifact@v3
+        name: Download Linux artifacts
         with:
           name: alma-linux
           path: app/linux/
     
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: app
+      - name: Create release directory
+        run: mkdir release
+    
+      - name: Copy windows executable
+        run: cp app/windows/Alma.exe release/alma.exe
+    
+      - name: Copy linux executable
+        run: cp app/linux/Alma release/alma-linux
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        name: Create release
+        with:
+          title: Test
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: latest
+          prerelease: false
+          draft: true
+          files: |
+            release/alma*
