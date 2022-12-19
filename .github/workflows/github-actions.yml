@@ -1,0 +1,75 @@
+name: Alma build
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      matrix:
+        target:
+          - runtime: win-x64
+            runner: windows-latest
+            name: windows
+            outputname: Alma.exe
+            version_script: .scripts/versioning.ps1
+          - runtime: linux-x64
+            runner: ubuntu-latest
+            name: linux
+            outputname: Alma
+            version_script: .scripts/versioning.sh
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      - name: Patch version
+        run: ${{ matrix.target.version_script }}
+        continue-on-error: true
+      - name: Restore dependencies
+        run: dotnet restore src/Alma
+      - name: Build
+        run: dotnet publish -c Release -p:PublishAot=true -r ${{ matrix.target.runtime }} -o app/ src/Alma
+      - uses: actions/upload-artifact@v3
+        with:
+          name: alma-${{ matrix.target.name }}
+          path: app/${{ matrix.target.outputname }}
+  
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        name: Download Windows artifacts
+        with:
+          name: alma-windows
+          path: app/windows/
+      - uses: actions/download-artifact@v3
+        name: Download Linux artifacts
+        with:
+          name: alma-linux
+          path: app/linux/
+    
+      - name: Create release directory
+        run: mkdir release
+    
+      - name: Copy windows executable
+        run: cp app/windows/Alma.exe release/alma.exe
+    
+      - name: Copy linux executable
+        run: cp app/linux/Alma release/alma-linux
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        name: Create release
+        with:
+          title: Test
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: latest
+          prerelease: false
+          draft: true
+          files: |
+            release/alma*
