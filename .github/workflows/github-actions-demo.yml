@@ -8,10 +8,12 @@ jobs:
     strategy:
       matrix:
         target:
-          - triple: x86_64-pc-windows-gnu
+          - runtime: x86_64-pc-windows-gnu
             runner: windows-latest
-          - triple: x86_64-unknown-linux-gnu
+            name: windows
+          - runtime: x86_64-unknown-linux-gnu
             runner: ubuntu-latest
+            name: linux
     steps:
       - uses: actions/checkout@v3
       - name: Setup dotnet
@@ -21,4 +23,8 @@ jobs:
       - name: Install dependencies
         run: dotnet restore src/Alma
       - name: Build
-        run: dotnet build src/Alma
+        run: dotnet publish -r ${{ matrix.target.runtime }} -o /app/ src/Alma
+      - uses: actions/upload-artifact@v3
+        with:
+          name: alma-${{ matrix.target.name }}
+          path: /app/
