@@ -23,7 +23,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore src/Alma
       - name: Build
-        run: dotnet publish -r ${{ matrix.target.runtime }} -o app/ src/Alma
+        run: dotnet publish -c Release -p:PublishAot=true -r ${{ matrix.target.runtime }} -o app/ src/Alma
       - uses: actions/upload-artifact@v3
         with:
           name: alma-${{ matrix.target.name }}
