@@ -14,13 +14,15 @@ public class InfoCommand : ICommand
     private readonly ILogger<InfoCommand> _logger;
     private readonly IOsInformation _osInformation;
     private readonly IVersionService _versionService;
+    private readonly IPathHelperService _pathHelperService;
 
     public InfoCommand(
         IFolderService folderService,
         IRepositoryConfiguration repositoryConfiguration,
         ILogger<InfoCommand> logger,
         IOsInformation osInformation,
-        IVersionService versionService
+        IVersionService versionService,
+        IPathHelperService pathHelperService
     )
     {
         _folderService = folderService;
@@ -28,6 +30,7 @@ public class InfoCommand : ICommand
         _logger = logger;
         _osInformation = osInformation;
         _versionService = versionService;
+        _pathHelperService = pathHelperService;
     }
 
     public async Task Run(List<string> parameters)
@@ -59,7 +62,7 @@ public class InfoCommand : ICommand
             foreach (var repository in repositories)
             {
                 Console.Write(repository.Name);
-                if (repository.RepositoryPath is not null && !Directory.Exists(PathHelper.ResolvePath(repository.RepositoryPath)))
+                if (repository.RepositoryPath is not null && !Directory.Exists(_pathHelperService.ResolvePath(repository.RepositoryPath)))
                 {
                     Console.Write($" (containing folder not exists {repository.RepositoryPath})");
                 }

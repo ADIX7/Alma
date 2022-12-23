@@ -13,6 +13,7 @@ public class LinkCommand : RepositoryModuleCommandBase
     private readonly IRepositoryConfiguration _repositoryConfiguration;
     private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
     private readonly IMetadataHandler _metadataHandler;
+    private readonly IPathHelperService _pathHelperService;
     private readonly ILogger<LinkCommand> _logger;
 
     public override string CommandString => "link";
@@ -21,12 +22,14 @@ public class LinkCommand : RepositoryModuleCommandBase
         IRepositoryConfiguration repositoryConfiguration,
         IModuleConfigurationResolver moduleConfigurationResolver,
         IMetadataHandler metadataHandler,
+        IPathHelperService pathHelperService,
         ILogger<LinkCommand> logger)
-        : base(repositoryConfiguration)
+        : base(repositoryConfiguration, pathHelperService)
     {
         _repositoryConfiguration = repositoryConfiguration;
         _moduleConfigurationResolver = moduleConfigurationResolver;
         _metadataHandler = metadataHandler;
+        _pathHelperService = pathHelperService;
         _logger = logger;
     }
 
@@ -64,7 +67,7 @@ public class LinkCommand : RepositoryModuleCommandBase
 
         if (moduleConfiguration?.Target is string moduleTargetDir)
         {
-            targetDirectory = PathHelper.ResolvePath(moduleTargetDir, targetDirectory);
+            targetDirectory = _pathHelperService.ResolvePath(moduleTargetDir, targetDirectory);
         }
 
         if (!Directory.Exists(targetDirectory))
@@ -130,7 +133,7 @@ public class LinkCommand : RepositoryModuleCommandBase
             _logger.LogInformation("An error occured while creating links: " + e.Message);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                _logger.LogInformation("On Windows symlinks can be greated only with Administrator privileges.");
+                _logger.LogInformation("On Windows symlinks can be created only with Administrator privileges.");
             }
         }
 
@@ -157,7 +160,7 @@ public class LinkCommand : RepositoryModuleCommandBase
             var relativePath = GetRelativePath(subDir.FullName, moduleDirectory.FullName);
             if (moduleConfiguration?.Links?.ContainsKey(relativePath) ?? false)
             {
-                filesToLink.Add(new ItemToLink(subDir.FullName, PathHelper.ResolvePath(moduleConfiguration.Links[relativePath], targetDirectory.FullName)));
+                filesToLink.Add(new ItemToLink(subDir.FullName, _pathHelperService.ResolvePath(moduleConfiguration.Links[relativePath], targetDirectory.FullName)));
             }
             else
             {

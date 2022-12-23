@@ -1,4 +1,5 @@
 ﻿using Alma.Command;
+using Alma.Command.Configure;
 using Alma.Command.Help;
 using Alma.Command.Info;
 using Alma.Command.Install;
@@ -47,10 +48,12 @@ public static class Program
 [Singleton(typeof(ICommand), typeof(ListCommand))]
 [Singleton(typeof(ICommand), typeof(InstallCommand))]
 [Singleton(typeof(ICommand), typeof(HelpCommand))]
+[Singleton(typeof(ICommand), typeof(ConfigureCommand))]
 [Singleton(typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver))]
 [Singleton(typeof(IMetadataHandler), typeof(MetadataHandler))]
 [Singleton(typeof(IShellService), typeof(ShellService))]
 [Singleton(typeof(IVersionService), typeof(VersionService))]
+[Singleton(typeof(IPathHelperService), typeof(PathHelperService))]
 [Singleton(typeof(Application))]
 [Transient(typeof(ILogger<>), Factory = nameof(CustomLoggerFactory))]
 internal partial class AlmaServiceProvider

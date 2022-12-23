@@ -1,17 +1,22 @@
 using Alma.Configuration.Repository;
 using Alma.Helper;
+using Alma.Services;
 
 namespace Alma.Command;
 
 public abstract class RepositoryModuleCommandBase : ICommand
 {
     private readonly IRepositoryConfiguration _repositoryConfiguration;
+    private readonly IPathHelperService _pathHelperService;
     public abstract string CommandString { get; }
     public abstract Task Run(List<string> parameters);
 
-    protected RepositoryModuleCommandBase(IRepositoryConfiguration repositoryConfiguration)
+    protected RepositoryModuleCommandBase(
+        IRepositoryConfiguration repositoryConfiguration,
+        IPathHelperService pathHelperService)
     {
         _repositoryConfiguration = repositoryConfiguration;
+        _pathHelperService = pathHelperService;
     }
 
     protected (string?, string?) GetRepositoryAndModuleName(List<string> parameters)
@@ -40,11 +45,11 @@ public abstract class RepositoryModuleCommandBase : ICommand
         {
             fallbackSourceDirectory =
                 repoConfig.RepositoryPath is { } repoPath
-                    ? PathHelper.ResolvePath(repoPath)
+                    ? _pathHelperService.ResolvePath(repoPath)
                     : fallbackSourceDirectory;
             fallbackTargetDirectory =
                 repoConfig.LinkPath is { } linkPath
-                    ? PathHelper.ResolvePath(linkPath)
+                    ? _pathHelperService.ResolvePath(linkPath)
                     : fallbackTargetDirectory;
         }
 
