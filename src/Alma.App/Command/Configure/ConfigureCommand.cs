@@ -9,7 +9,6 @@ namespace Alma.Command.Configure;
 public class ConfigureCommand : RepositoryModuleCommandBase
 {
     private readonly ILogger<InstallCommand> _logger;
-    private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
     private readonly IShellService _shellService;
     public override string CommandString => "configure";
 
@@ -19,10 +18,9 @@ public class ConfigureCommand : RepositoryModuleCommandBase
         IModuleConfigurationResolver moduleConfigurationResolver,
         IShellService shellService,
         IPathHelperService pathHelperService)
-        : base(repositoryConfiguration, pathHelperService)
+        : base(repositoryConfiguration, pathHelperService, moduleConfigurationResolver)
     {
         _logger = logger;
-        _moduleConfigurationResolver = moduleConfigurationResolver;
         _shellService = shellService;
     }
 
@@ -34,17 +32,7 @@ public class ConfigureCommand : RepositoryModuleCommandBase
             _logger.LogInformation("No module specified");
             return;
         }
-
-        string sourceDirectory = Path.Combine(Environment.CurrentDirectory);
-        string targetDirectory = Path.Combine(Environment.CurrentDirectory, "..");
-
-        string moduleNameAsPath = moduleName.Replace('/', Path.DirectorySeparatorChar);
-        (sourceDirectory, _) = GetModuleSourceAndTargetDirectory(repoName, sourceDirectory, targetDirectory);
-
-        string moduleDirectory = Path.Combine(sourceDirectory, moduleNameAsPath);
-
-        var moduleConfigFileStub = Path.Combine(moduleDirectory, Constants.ModuleConfigFileStub);
-        var (moduleConfiguration, moduleConfigurationFile) = await _moduleConfigurationResolver.ResolveModuleConfiguration(moduleConfigFileStub);
+        var (moduleConfiguration, _) = await GetModuleConfiguration(repoName, moduleName);
 
         if (moduleConfiguration is null)
         {

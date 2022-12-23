@@ -7,7 +7,7 @@ public class ModuleConfiguration
 
     public string? Install { get; set; }
     public string? Configure { get; set; }
-    
+
     public ModuleConfiguration(string? target, Dictionary<string, string>? links, string? install, string? configure)
     {
         Target = target;
