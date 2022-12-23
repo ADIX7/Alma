@@ -4,7 +4,7 @@ namespace Alma.Services;
 
 public class PathHelperService : IPathHelperService
 {
-    private static List<SpecialPathResolver> _specialPathResolvers = new()
+    private static readonly List<SpecialPathResolver> _specialPathResolvers = new()
     {
         new("~", () => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), true),
         new("%DOCUMENTS%", () => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
@@ -13,12 +13,6 @@ public class PathHelperService : IPathHelperService
     public string ResolvePath(string path, string? currentDirectory = null)
     {
         var skipCombiningCurrentDirectory = false;
-        /*if (path.StartsWith("~"))
-        {
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            path = path.Length > 1 ? Path.Combine(userProfile, path[2..]) : userProfile;
-            skipCombiningCurrentDirectory = true;
-        }*/
 
         foreach (var specialPathResolver in _specialPathResolvers)
         {
@@ -30,7 +24,7 @@ public class PathHelperService : IPathHelperService
             }
         }
 
-        //TODO: more special character
+        path = path.Replace('/', Path.DirectorySeparatorChar);
 
         return currentDirectory is null || skipCombiningCurrentDirectory
             ? path

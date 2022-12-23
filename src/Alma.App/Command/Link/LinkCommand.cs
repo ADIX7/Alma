@@ -24,7 +24,7 @@ public class LinkCommand : RepositoryModuleCommandBase
         IMetadataHandler metadataHandler,
         IPathHelperService pathHelperService,
         ILogger<LinkCommand> logger)
-        : base(repositoryConfiguration, pathHelperService)
+        : base(repositoryConfiguration, pathHelperService, moduleConfigurationResolver)
     {
         _repositoryConfiguration = repositoryConfiguration;
         _moduleConfigurationResolver = moduleConfigurationResolver;
@@ -42,10 +42,7 @@ public class LinkCommand : RepositoryModuleCommandBase
             return;
         }
 
-        string sourceDirectory = Path.Combine(Environment.CurrentDirectory);
-        string targetDirectory = Path.Combine(Environment.CurrentDirectory, "..");
-
-        (sourceDirectory, targetDirectory) = GetModuleSourceAndTargetDirectory(repoName, sourceDirectory, targetDirectory);
+        var (sourceDirectory, targetDirectory) = GetRepositorySourceAndTargetDirectory(repoName);
 
         if (!Directory.Exists(sourceDirectory))
         {

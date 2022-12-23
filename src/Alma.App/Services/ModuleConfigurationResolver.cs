@@ -29,6 +29,11 @@ public class ModuleConfigurationResolver : IModuleConfigurationResolver
         //TODO: priority order
         var orderedValidModuleConfigurations = new Dictionary<string, ModuleConfiguration>(validModuleConfigurations);
 
+        if (orderedValidModuleConfigurations.Count == 0)
+        {
+            return (ModuleConfiguration.Empty(), moduleConfigFileName);
+        }
+
         var mergedModuleConfig = orderedValidModuleConfigurations
             .Select(m => m.Value)
             .Aggregate((a, b) => a.Merge(b));
