@@ -1,19 +1,19 @@
-using System.Diagnostics;
+﻿using Alma.Command.Install;
 using Alma.Configuration.Repository;
 using Alma.Data;
 using Alma.Logging;
 using Alma.Services;
 
-namespace Alma.Command.Install;
+namespace Alma.Command.Configure;
 
-public class InstallCommand : RepositoryModuleCommandBase
+public class ConfigureCommand : RepositoryModuleCommandBase
 {
     private readonly ILogger<InstallCommand> _logger;
     private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
     private readonly IShellService _shellService;
-    public override string CommandString => "install";
+    public override string CommandString => "configure";
 
-    public InstallCommand(
+    public ConfigureCommand(
         ILogger<InstallCommand> logger,
         IRepositoryConfiguration repositoryConfiguration,
         IModuleConfigurationResolver moduleConfigurationResolver,
@@ -52,20 +52,20 @@ public class InstallCommand : RepositoryModuleCommandBase
             return;
         }
 
-        var installLines = moduleConfiguration.Install?.Split(Environment.NewLine);
+        var configureLines = moduleConfiguration.Configure?.Split(Environment.NewLine);
 
-        if (installLines is null)
+        if (configureLines is null)
         {
-            _logger.LogInformation("No install command is found");
+            _logger.LogInformation("No configure command is found");
             return;
         }
 
-        _logger.LogInformation($"Install command: {string.Join("\n", installLines)}");
+        _logger.LogInformation($"Configure command: {string.Join("\n", configureLines)}");
 
-        if (installLines.Length == 1)
+        if (configureLines.Length == 1)
         {
-            _logger.LogInformation("Running install command '" + installLines[0] + "'");
-            await _shellService.RunCommandAsync(installLines[0]);
+            _logger.LogInformation("Running configure command '" + configureLines[0] + "'");
+            await _shellService.RunCommandAsync(configureLines[0]);
         }
         else
         {
