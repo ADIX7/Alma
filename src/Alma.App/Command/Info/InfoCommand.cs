@@ -1,7 +1,6 @@
 using Alma.Configuration.Module;
 using Alma.Configuration.Repository;
 using Alma.Data;
-using Alma.Helper;
 using Alma.Logging;
 using Alma.Services;
 
@@ -66,7 +65,7 @@ public class InfoCommand : RepositoryModuleCommandBase
         }
     }
 
-    async Task ProcessGeneralInfoAsync()
+    private async Task ProcessGeneralInfoAsync()
     {
         _logger.LogInformation("Alma " + _versionService.GetVersion());
         _logger.LogInformation("");
@@ -87,7 +86,7 @@ public class InfoCommand : RepositoryModuleCommandBase
         _logger.LogInformation($"Platform is '{await _osInformation.GetOsIdentifierAsync()}'");
         _logger.LogInformation("");
 
-        if (_repositoryConfiguration.Configuration.Repositories is {Count: > 0} repositories)
+        if (_repositoryConfiguration.Configuration.Repositories is { Count: > 0 } repositories)
         {
             _logger.LogInformation("Repositories:");
             foreach (var repository in repositories)
@@ -107,7 +106,7 @@ public class InfoCommand : RepositoryModuleCommandBase
         }
     }
 
-    async Task ProcessRepoInfoAsync(string repoName)
+    private async Task ProcessRepoInfoAsync(string repoName)
     {
         var (repoSourceDirectory, _) = GetRepositorySourceAndTargetDirectory(repoName);
 
