@@ -60,6 +60,7 @@ public class DiagCommand : ICommand
         var commands = diagnosticHelpers
             .Select(h => GetDiagnosticHelper(h)?.Command)
             .OfType<string>()
+            .Order()
             .ToList();
 
         _logger.LogInformation("Available diagnostic helpers:");
