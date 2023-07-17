@@ -137,7 +137,7 @@ public class InfoCommand : RepositoryModuleCommandBase
 
         if (moduleConfig is not null)
         {
-            var moduleName = currentDirectory.FullName[(repoRoot.FullName.Length + 1)..].Replace(Path.DirectorySeparatorChar, '/');
+            var moduleName = currentDirectory.FullName[(repoRoot.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1)..].Replace(Path.DirectorySeparatorChar, '/');
             modulesFound = modulesFound.Append(new(moduleName, moduleConfig));
         }
 
