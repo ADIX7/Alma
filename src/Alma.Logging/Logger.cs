@@ -1,10 +1,11 @@
 ﻿namespace Alma.Logging;
 
-public class Logger<T> : ILogger<T>
+
+public class Logger : ILogger
 {
     public LogLevel DefaultLogLevel { get; }
 
-    public Logger(LogLevel defaultLogLevel)
+    public Logger(LogLevel defaultLogLevel, string topicName)
     {
         DefaultLogLevel = defaultLogLevel;
     }
@@ -31,5 +32,13 @@ public class Logger<T> : ILogger<T>
     public void LogCritical(string logMessage)
     {
         Log(logMessage, LogLevel.Critical);
+    }
+}
+
+public class Logger<T> : Logger, ILogger<T>
+{
+    public Logger(LogLevel defaultLogLevel) : base(defaultLogLevel, typeof(T).Name)
+    {
+        
     }
 }

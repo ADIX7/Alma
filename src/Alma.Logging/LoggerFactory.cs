@@ -13,4 +13,9 @@ public class LoggerFactory : ILoggerFactory
     {
         return new Logger<T>(DefaultLogLevel);
     }
+
+    public ILogger CreateLogger(Type t)
+    {
+        return new Logger(DefaultLogLevel, t.Name);
+    }
 }

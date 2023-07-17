@@ -1,4 +1,7 @@
-﻿using Alma.Data;
+﻿using System.Diagnostics.CodeAnalysis;
+using Alma.Command.Diag;
+using Alma.Data;
+using Alma.Logging;
 
 namespace Alma.Services;
 
@@ -10,6 +13,7 @@ public class PathHelperService : IPathHelperService
         new("%DOCUMENTS%", () => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
     };
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PathHelperService))]
     public string ResolvePath(string path, string? currentDirectory = null)
     {
         var skipCombiningCurrentDirectory = false;
@@ -29,5 +33,15 @@ public class PathHelperService : IPathHelperService
         return currentDirectory is null || skipCombiningCurrentDirectory
             ? path
             : Path.Combine(currentDirectory, path);
+    }
+
+    [DiagnosticHelper("special-path-resolver")]
+    public static void SpecialPathResolverDiag(ILogger logger)
+    {
+        logger.LogInformation($"There are {_specialPathResolvers.Count} special path resolvers:");
+        foreach (var specialPathResolver in _specialPathResolvers)
+        {
+            logger.LogInformation($"{specialPathResolver.PathName} => {specialPathResolver.Resolver()}");
+        }
     }
 }
