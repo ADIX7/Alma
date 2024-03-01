@@ -9,6 +9,7 @@ namespace Alma.Command.Info;
 public class InfoCommand : RepositoryModuleCommandBase
 {
     public override string CommandString => "info";
+    public override string[] CommandAliases => Array.Empty<string>();
 
     private readonly IFolderService _folderService;
     private readonly IRepositoryConfiguration _repositoryConfiguration;

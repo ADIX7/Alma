@@ -19,7 +19,14 @@ public class ConfigurationFileReader
     {
         foreach (var configurationFileReader in _configurationFileReaders)
         {
-            if (await configurationFileReader.DeserializeAsync<T>(fileNameWithoutExtension, contextGenerator, extension) is { Result: { } } result) return result;
+            if (await configurationFileReader.DeserializeAsync<T>(
+                fileNameWithoutExtension,
+                contextGenerator,
+                extension) is { Result: { } } result
+            )
+            {
+                return result;
+            }
         }
 
         return (null, null);

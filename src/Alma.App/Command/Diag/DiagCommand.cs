@@ -7,6 +7,8 @@ public class DiagCommand : ICommand
 {
     private readonly ILogger<DiagCommand> _logger;
     public string CommandString => "diag";
+    public string[] CommandAliases => Array.Empty<string>();
+
     private readonly Lazy<IReadOnlyList<MethodInfo>> _diagnosticHelpersLazy;
 
     public DiagCommand(ILogger<DiagCommand> logger)

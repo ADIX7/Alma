@@ -12,6 +12,7 @@ public class ListCommand : ICommand
     private readonly ILogger<ListCommand> _logger;
 
     public string CommandString => "ls";
+    public string[] CommandAliases => Array.Empty<string>();
 
     public ListCommand(
         IRepositoryConfiguration repositoryConfiguration,

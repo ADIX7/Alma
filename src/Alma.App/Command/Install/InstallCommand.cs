@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Alma.Configuration.Repository;
-using Alma.Data;
 using Alma.Logging;
 using Alma.Services;
 
@@ -11,6 +9,7 @@ public class InstallCommand : RepositoryModuleCommandBase
     private readonly ILogger<InstallCommand> _logger;
     private readonly IShellService _shellService;
     public override string CommandString => "install";
+    public override string[] CommandAliases => Array.Empty<string>();
 
     public InstallCommand(
         ILogger<InstallCommand> logger,

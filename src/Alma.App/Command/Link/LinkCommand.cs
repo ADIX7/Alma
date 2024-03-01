@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using Alma.Configuration.Module;
 using Alma.Configuration.Repository;
 using Alma.Data;
-using Alma.Helper;
 using Alma.Logging;
 using Alma.Services;
 
@@ -17,6 +16,7 @@ public class LinkCommand : RepositoryModuleCommandBase
     private readonly ILogger<LinkCommand> _logger;
 
     public override string CommandString => "link";
+    public override string[] CommandAliases => Array.Empty<string>();
 
     public LinkCommand(
         IRepositoryConfiguration repositoryConfiguration,

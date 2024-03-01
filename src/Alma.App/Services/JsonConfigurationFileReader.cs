@@ -17,6 +17,12 @@ public class JsonConfigurationFileReader : IConfigurationFileReader
         if (!File.Exists(fileName)) return (null, null);
 
         await using FileStream openStream = File.OpenRead(fileName);
-        return ((T?)await JsonSerializer.DeserializeAsync(openStream, typeof(T), contextGenerator(new JsonSerializerOptions(DefaultOptions))), fileName);
+        var result = 
+            (T?)await JsonSerializer.DeserializeAsync(
+                openStream,
+                typeof(T),
+                contextGenerator(new JsonSerializerOptions(DefaultOptions))
+            );
+        return (result, fileName);
     }
 }

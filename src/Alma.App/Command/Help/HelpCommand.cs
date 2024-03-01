@@ -9,6 +9,8 @@ public class HelpCommand : ICommand
 
     public string CommandString => "help";
 
+    public string[] CommandAliases { get; } = ["--help", "-h"];
+
     public HelpCommand(
         IServiceProvider serviceProvider,
         ILogger<HelpCommand> logger

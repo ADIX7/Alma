@@ -1,5 +1,4 @@
 ﻿using Alma.Command;
-using Alma.Command.Help;
 using Alma.Logging;
 
 namespace Alma;

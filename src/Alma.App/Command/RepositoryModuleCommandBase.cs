@@ -10,6 +10,8 @@ public abstract class RepositoryModuleCommandBase : ICommand
     private readonly IModuleConfigurationResolver _moduleConfigurationResolver;
     private readonly IPathHelperService _pathHelperService;
     public abstract string CommandString { get; }
+    public abstract string[] CommandAliases { get; }
+
     public abstract Task Run(List<string> parameters);
 
     protected RepositoryModuleCommandBase(
