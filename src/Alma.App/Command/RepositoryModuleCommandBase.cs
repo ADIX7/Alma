@@ -41,6 +41,8 @@ public abstract class RepositoryModuleCommandBase : ICommand
         string? repositoryName = null;
         string? moduleName = null;
 
+        parameters = parameters.Where(p => !p.StartsWith("-")).ToList();
+
         if (parameters.Count == 1)
         {
             if (singleParamIsRepo)

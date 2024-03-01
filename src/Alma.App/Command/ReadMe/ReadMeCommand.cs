@@ -3,6 +3,7 @@
 using Alma.Command.Install;
 using Alma.Configuration.Repository;
 using Alma.Logging;
+using Alma.Models;
 using Alma.Services;
 
 namespace Alma.Command.List;
@@ -15,6 +16,8 @@ public class ReadMeCommand : RepositoryModuleCommandBase
 
     public override string[] CommandAliases => Array.Empty<string>();
 
+    private readonly Dictionary<ReadmeFiles, Func<string, Task>> _readmeFilePrinters;
+
     public ReadMeCommand(
         ILogger<InstallCommand> logger,
         IRepositoryConfiguration repositoryConfiguration,
@@ -23,6 +26,13 @@ public class ReadMeCommand : RepositoryModuleCommandBase
         : base(repositoryConfiguration, pathHelperService, moduleConfigurationResolver)
     {
         _logger = logger;
+
+        _readmeFilePrinters = new Dictionary<ReadmeFiles, Func<string, Task>>
+        {
+            { ReadmeFiles.Markdown, PrintReadMeMd },
+            { ReadmeFiles.Text, PrintReadMeText },
+            { ReadmeFiles.NoExtension, PrintReadMeText },
+        };
     }
 
     public override async Task Run(List<string> parameters)
@@ -42,26 +52,20 @@ public class ReadMeCommand : RepositoryModuleCommandBase
         }
 
         var fileFound = false;
-        var readmeMdPath = Path.Combine(repoSource, moduleName, "README.md");
-        var readmeTxtPath = Path.Combine(repoSource, moduleName, "README.md");
-        var readmePath = Path.Combine(repoSource, moduleName, "README.md");
-        if(File.Exists(readmeMdPath))
+
+        foreach (var readmeFile in _readmeFilePrinters.Keys)
         {
-            fileFound = true;
-            await PrintReadMeMd(readmeMdPath);
-        }
-        else if(File.Exists(readmeTxtPath))
-        {
-            fileFound = true;
-            await PrintReadMeText(readmeMdPath);
-        }
-        else if(File.Exists(readmePath))
-        {
-            fileFound = true;
-            await PrintReadMeText(readmePath);
+            // TODO: make this case insensitive
+            var readmeFilePath = Path.Combine(repoSource, moduleName, readmeFile.ToString());
+            if (File.Exists(readmeFilePath))
+            {
+                fileFound = true;
+                await _readmeFilePrinters[readmeFile](readmeFilePath);
+                break;
+            }
         }
 
-        if(!fileFound)
+        if (!fileFound)
         {
             _logger.LogInformation("No README file found. Supported formats: README.md, README.txt, README");
         }
@@ -70,7 +74,7 @@ public class ReadMeCommand : RepositoryModuleCommandBase
     private async Task PrintReadMeMd(string filePath)
     {
         var content = await File.ReadAllLinesAsync(filePath);
-        foreach(var line in content)
+        foreach (var line in content)
         {
             //TODO: Add support for markdown
             _logger.LogInformation(line);
@@ -80,7 +84,7 @@ public class ReadMeCommand : RepositoryModuleCommandBase
     private async Task PrintReadMeText(string filePath)
     {
         var content = await File.ReadAllLinesAsync(filePath);
-        foreach(var line in content)
+        foreach (var line in content)
         {
             _logger.LogInformation(line);
         }

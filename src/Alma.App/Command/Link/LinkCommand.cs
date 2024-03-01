@@ -3,6 +3,7 @@ using Alma.Configuration.Module;
 using Alma.Configuration.Repository;
 using Alma.Data;
 using Alma.Logging;
+using Alma.Models;
 using Alma.Services;
 
 namespace Alma.Command.Link;
@@ -35,6 +36,24 @@ public class LinkCommand : RepositoryModuleCommandBase
 
     public override async Task Run(List<string> parameters)
     {
+        if (parameters.Contains("--help"))
+        {
+            _logger.LogInformation(
+                """
+                Usage:                
+                    alma link [module]
+                    alma link [repository] [module]
+
+                Options:
+                    --help          Show this message
+                    -d, --dry-run   Show what would be linked without actually linking
+                """
+            );
+            return;
+        }
+
+        var dryRun = parameters.Contains("-d") || parameters.Contains("--dry-run");
+
         var (repoName, moduleName) = GetRepositoryAndModuleName(parameters);
         if (moduleName is null)
         {
@@ -82,14 +101,46 @@ public class LinkCommand : RepositoryModuleCommandBase
             moduleDir,
             currentTargetDirectory,
             moduleConfiguration)).ToList();
+
+        // Exclude
         if (moduleConfigurationFile is not null) itemsToLink.RemoveAll(i => i.SourcePath == moduleConfigurationFileFullPath);
 
-        var successfulLinks = CreateLinks(itemsToLink);
+        if (moduleConfiguration?.Exclude is { } excludeList)
+        {
+            foreach (var itemToExclude in excludeList)
+            {
+                var excludePath = Path.Combine(moduleDirectory, Path.Combine(itemToExclude.Split('/')));
+                itemsToLink.RemoveAll(
+                    i => i.SourcePath == excludePath 
+                    || i.SourcePath.StartsWith(excludePath + Path.DirectorySeparatorChar)
+                );
+            }
+        }
+
+        if(moduleConfiguration?.ExcludeReadme ?? false)
+        {
+            foreach (var readmeFile in Enum.GetValues<ReadmeFiles>())
+            {
+                var readmeFilePath = Path.Combine(moduleDirectory, readmeFile.GetFileName());
+                itemsToLink.RemoveAll(i => i.SourcePath == readmeFilePath);
+            }
+        }
+
+        // Linking
+
+        if (dryRun)
+        {
+            _logger.LogInformation("Dry run. No links will be created. The following links would be created:");
+        }
+
+        var successfulLinks = CreateLinks(itemsToLink, dryRun);
+
+        if (dryRun) return;
 
         await _metadataHandler.SaveLinkedItemsAsync(successfulLinks, moduleDir, currentTargetDirectory);
     }
 
-    private List<ItemToLink> CreateLinks(List<ItemToLink> itemsToLink)
+    private List<ItemToLink> CreateLinks(List<ItemToLink> itemsToLink, bool dryRun)
     {
         var successfulLinks = new List<ItemToLink>();
 
@@ -108,18 +159,21 @@ public class LinkCommand : RepositoryModuleCommandBase
 
                 _logger.LogInformation($"Linking: '{itemToLink.SourcePath}' '{itemToLink.TargetPath}'");
 
-                if (sourceFileExists)
+                if (!dryRun)
                 {
-                    File.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
-                }
-                else if (sourceDirectoryExists)
-                {
-                    Directory.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
-                }
-                else
-                {
-                    _logger.LogInformation("Source not exists: " + itemToLink.SourcePath);
-                    continue;
+                    if (sourceFileExists)
+                    {
+                        File.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
+                    }
+                    else if (sourceDirectoryExists)
+                    {
+                        Directory.CreateSymbolicLink(itemToLink.TargetPath, itemToLink.SourcePath);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Source not exists: " + itemToLink.SourcePath);
+                        continue;
+                    }
                 }
 
                 successfulLinks.Add(itemToLink);

@@ -4,6 +4,8 @@ public class ModuleConfiguration
 {
     public string? Target { get; set; }
     public Dictionary<string, string>? Links { get; set; }
+    public List<string>? Exclude { get; set; }
+    public bool ExcludeReadme { get; set; } = true;
 
     public string? Install { get; set; }
     public string? Configure { get; set; }
