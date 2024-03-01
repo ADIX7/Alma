@@ -27,6 +27,18 @@ public class DiagCommand : ICommand
 
         var command = parameters[0];
 
+        if(command == "--help")
+        {
+            _logger.LogInformation(
+                """
+                Usage: 
+                    diag list
+                    diag <diag-helper>
+                """
+            );
+            return Task.CompletedTask;
+        }
+
         if (command == "list")
         {
             ListDiagnosticHelpers();
