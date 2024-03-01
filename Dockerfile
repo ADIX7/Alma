@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine as BUILD
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine as BUILD
 
-RUN apk add -U bash build-base clang icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib-dev
+RUN apk add -U clang zlib-dev
 WORKDIR /build
 COPY . .
 
