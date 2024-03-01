@@ -24,7 +24,7 @@ public class Application
 
         var commandString = args[0];
 
-        var command = _commands.FirstOrDefault(c => c.CommandString == commandString);
+        var command = _commands.FirstOrDefault(c => c.CommandString == commandString || c.CommandAliases.Contains(commandString));
 
         if (command is null)
         {
