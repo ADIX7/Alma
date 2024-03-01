@@ -86,6 +86,7 @@ public static class Program
 [Singleton(typeof(ICommand), typeof(HelpCommand))]
 [Singleton(typeof(ICommand), typeof(ConfigureCommand))]
 [Singleton(typeof(ICommand), typeof(DiagCommand))]
+[Singleton(typeof(ICommand), typeof(ReadMeCommand))]
 [Singleton(typeof(IModuleConfigurationResolver), typeof(ModuleConfigurationResolver))]
 [Singleton(typeof(IMetadataHandler), typeof(MetadataHandler))]
 [Singleton(typeof(IShellService), typeof(ShellService))]
