@@ -111,13 +111,13 @@ public class LinkCommand : RepositoryModuleCommandBase
             {
                 var excludePath = Path.Combine(moduleDirectory, Path.Combine(itemToExclude.Split('/')));
                 itemsToLink.RemoveAll(
-                    i => i.SourcePath == excludePath 
+                    i => i.SourcePath == excludePath
                     || i.SourcePath.StartsWith(excludePath + Path.DirectorySeparatorChar)
                 );
             }
         }
 
-        if(moduleConfiguration?.ExcludeReadme ?? false)
+        if (moduleConfiguration?.ExcludeReadme ?? false)
         {
             foreach (var readmeFile in Enum.GetValues<ReadmeFiles>())
             {
@@ -201,7 +201,14 @@ public class LinkCommand : RepositoryModuleCommandBase
         var filesToLink = new List<ItemToLink>();
         foreach (var file in currentDirectory.GetFiles())
         {
-            filesToLink.Add(new ItemToLink(Path.Combine(currentDirectory.FullName, file.Name), Path.Combine(currentTargetDirectory.FullName, file.Name)));
+            if (moduleConfiguration?.Links?.ContainsKey(file.Name) ?? false)
+            {
+                filesToLink.Add(new ItemToLink(file.FullName, _pathHelperService.ResolvePath(moduleConfiguration.Links[file.Name], targetDirectory.FullName)));
+            }
+            else
+            {
+                filesToLink.Add(new ItemToLink(file.FullName, Path.Combine(currentTargetDirectory.FullName, file.Name)));
+            }
         }
 
         var subDirLinksToAdd = Enumerable.Empty<ItemToLink>();

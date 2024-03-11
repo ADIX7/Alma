@@ -10,8 +10,8 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Alma/bin/Debug/net7.0/Alma.dll",
-            "args": [],
+            "program": "${workspaceFolder}/src/Alma/bin/Debug/net8.0/Alma.dll",
+            "args": ["link", "dotconfig", "git", "-d"],
             "cwd": "${workspaceFolder}/src/Alma",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
