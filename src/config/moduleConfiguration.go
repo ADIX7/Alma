@@ -51,6 +51,7 @@ func LoadModuleConfiguration(moduleConfigPath string) *ModuleConfiguration {
 	}
 
 	for _, platformKey := range platformKeys {
+        // TODO: apply only the platform-specific configuration
 		moduleConfiguration.Merge(moduleConfigurationRoot[platformKey])
 	}
 
