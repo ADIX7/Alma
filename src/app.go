@@ -7,6 +7,11 @@ import (
 )
 
 func run(commands []command.Command, args []string) {
+    if len(args) == 0 {
+        println("Usage: alma <command> [args]")
+        return
+    }
+
 	command, found := lo.Find(commands, func(c command.Command) bool { return c.GetName() == args[0] })
 
 	if !found {
