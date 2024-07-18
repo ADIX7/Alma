@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug in VSCode",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "src/",
+            "args": ["link", "test1", "-d"]
+        },
+        {
+            "name": "Debug in Neovim",
+            "type": "delve",
+            "request": "launch",
+            "program": "${workspaceFolder}/src",
+            "args": ["link", "test_module", "-d"],
+            "dlvCwd": "${workspaceFolder}/src",
+        }
+    ]
+}
