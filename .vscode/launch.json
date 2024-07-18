@@ -15,7 +15,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/src",
             "args": ["link", "test_module", "-d"],
-            "dlvCwd": "${workspaceFolder}/src",
+            "dlvCwd": "${workspaceFolder}/src"
         }
     ]
 }
