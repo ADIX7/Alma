@@ -14,7 +14,8 @@
             "type": "delve",
             "request": "launch",
             "program": "${workspaceFolder}/src",
-            "args": ["link", "test_module", "-d"],
+            "args1": ["link", "test_module", "-d"],
+            "args": ["info"],
             "dlvCwd": "${workspaceFolder}/src"
         }
     ]

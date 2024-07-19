@@ -5,5 +5,13 @@
             "test_folder": "test_folder",
             "test_folder2": "test_folder3"
         }
+    },
+    "win": {
+    },
+    "linux": {
+    },
+    "linux-fedora-x64": {
+    },
+    "linux-fedora": {
     }
 }

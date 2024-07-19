@@ -1,6 +1,7 @@
 package config
 
 import (
+	"alma/helpers"
 	"cmp"
 	"encoding/json"
 	"io"
@@ -36,8 +37,9 @@ func LoadModuleConfiguration(moduleConfigPath string) *ModuleConfiguration {
 	platformKeys := make([]string, 0, len(moduleConfigurationRoot))
 
 	for key := range moduleConfigurationRoot {
-		if key != "default" {
+		if key != "default" && helpers.IsOnPlatform(key) {
 			platformKeys = append(platformKeys, key)
+            println("Adding platform '" + key + "'")
 		}
 	}
 
@@ -51,7 +53,7 @@ func LoadModuleConfiguration(moduleConfigPath string) *ModuleConfiguration {
 	}
 
 	for _, platformKey := range platformKeys {
-        // TODO: apply only the platform-specific configuration
+        println("Merging platform '" + platformKey + "'")
 		moduleConfiguration.Merge(moduleConfigurationRoot[platformKey])
 	}
 
