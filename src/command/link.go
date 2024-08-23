@@ -34,48 +34,31 @@ Options:
 }
 
 func (LinkCommand) Run(args []string) {
-	repoName, moduleName := helpers.GetRepositoryAndModuleName(args)
+	moduleInfo, err := helpers.GetModuleInfo(args)
 
-	if moduleName == nil {
-		println("Module name is required")
+	if err != nil {
+		println(err.Error())
 		return
 	}
+
+	moduleDirectory := moduleInfo.ModuleDirectory
+	targetDirectory := moduleInfo.TargetDirectory
 
 	dryRun := lo.ContainsBy(args, func(item string) bool { return (item == "-d" || item == "--dry-run") })
 
-	sourceDirectory, targetDirectory := helpers.GetRepositorySourceAndTargetDirectory(repoName)
-	if sourceDirectory == nil {
-		println("Source directory not exists")
-		return
-	}
-
-	sourceDirectoryFolderInfo, err := os.Stat(*sourceDirectory)
-	if err != nil || !sourceDirectoryFolderInfo.IsDir() {
-		println("Source directory not exists", *sourceDirectory)
-		return
-	}
-
-	moduleNameAsPath := strings.ReplaceAll((*moduleName), "/", string(filepath.Separator))
-	moduleDirectory := filepath.Join(*sourceDirectory, moduleNameAsPath)
-
-	moduleDirectoryFolderInfo, err := os.Stat(moduleDirectory)
-	if err != nil || !moduleDirectoryFolderInfo.IsDir() {
-		println("Module directory not exists", moduleDirectory)
-		return
-	}
-
 	almaConfigFilePath, err := os.Stat(filepath.Join(moduleDirectory, ".alma-config.json"))
 	moduleConfiguration := &config.ModuleConfiguration{}
+
 	if err == nil && !almaConfigFilePath.IsDir() {
 		moduleConfiguration = config.LoadModuleConfiguration(filepath.Join(moduleDirectory, ".alma-config.json"))
-		targetDirectory1 := helpers.ResolvePath(moduleConfiguration.Target)
-		targetDirectory = &targetDirectory1
+		targetDirectory = helpers.ResolvePath(moduleConfiguration.Target)
 	}
+
 	itemsToLink := TraverseTree(
 		&moduleDirectory,
-		targetDirectory,
+		&targetDirectory,
 		&moduleDirectory,
-		targetDirectory,
+		&targetDirectory,
 		moduleConfiguration,
 	)
 

@@ -9,6 +9,7 @@ func main() {
 	commands := []command.Command{
 		command.LinkCommand{},
 		command.InfoCommand{},
+		command.InstallCommand{},
 	}
 
 	run(commands, os.Args[1:])

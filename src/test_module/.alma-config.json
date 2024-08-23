@@ -4,7 +4,8 @@
         "links": {
             "test_folder": "test_folder",
             "test_folder2": "test_folder3"
-        }
+        },
+        "install": "echo 'INSTALL WORKS!! install command for test_module'"
     },
     "win": {
     },
