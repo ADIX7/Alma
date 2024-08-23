@@ -39,7 +39,6 @@ func LoadModuleConfiguration(moduleConfigPath string) *ModuleConfiguration {
 	for key := range moduleConfigurationRoot {
 		if key != "default" && helpers.IsOnPlatform(key) {
 			platformKeys = append(platformKeys, key)
-            println("Adding platform '" + key + "'")
 		}
 	}
 
@@ -53,7 +52,6 @@ func LoadModuleConfiguration(moduleConfigPath string) *ModuleConfiguration {
 	}
 
 	for _, platformKey := range platformKeys {
-        println("Merging platform '" + platformKey + "'")
 		moduleConfiguration.Merge(moduleConfigurationRoot[platformKey])
 	}
 
