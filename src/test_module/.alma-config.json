@@ -1,6 +1,9 @@
 {
     "default": {
         "target": "~/.config/test_module",
+        "exclude": [
+            "test2.txt"
+        ],
         "links": {
             "test_folder": "test_folder",
             "test_folder2": "test_folder3"
