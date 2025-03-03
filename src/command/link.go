@@ -64,7 +64,8 @@ func (LinkCommand) Run(args []string) {
 
 	filteredItemsToLink := lo.Filter(itemsToLink, func(item itemToLink, index int) bool {
 		for _, exclude := range moduleConfiguration.Exclude {
-			if strings.HasPrefix(item.source, exclude) {
+			sourceRelative := item.source[len(moduleDirectory)+1:]
+			if strings.HasPrefix(sourceRelative, exclude) {
 				return false
 			}
 		}
