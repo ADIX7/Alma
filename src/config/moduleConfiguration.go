@@ -59,6 +59,7 @@ func LoadModuleConfiguration(moduleConfigPath string) *ModuleConfiguration {
 }
 
 func (moduleConfig *ModuleConfiguration) Merge(mergeConfig *ModuleConfiguration) {
+	// Merge links
 	mergedLinks := make(map[string]string, len(moduleConfig.Links)+len(mergeConfig.Links))
 	for key, value := range moduleConfig.Links {
 		mergedLinks[key] = value
@@ -70,6 +71,22 @@ func (moduleConfig *ModuleConfiguration) Merge(mergeConfig *ModuleConfiguration)
 
 	moduleConfig.Links = mergedLinks
 
+	// Merge excludes
+	mergedExcludes := make([]string, len(moduleConfig.Exclude)+len(mergeConfig.Exclude))
+	excludeIndex := 0
+	for _, value := range moduleConfig.Exclude {
+		mergedExcludes[excludeIndex] = value
+		excludeIndex++
+	}
+
+	for _, value := range mergeConfig.Links {
+		mergedExcludes[excludeIndex] = value
+		excludeIndex++
+	}
+
+	moduleConfig.Exclude = mergedExcludes
+
+	// Simple properties
 	if mergeConfig.Target != "" {
 		moduleConfig.Target = mergeConfig.Target
 	}
@@ -79,4 +96,6 @@ func (moduleConfig *ModuleConfiguration) Merge(mergeConfig *ModuleConfiguration)
 	if mergeConfig.Configure != "" {
 		moduleConfig.Configure = mergeConfig.Configure
 	}
+
+	moduleConfig.ExcludeReadme = moduleConfig.ExcludeReadme || mergeConfig.ExcludeReadme
 }
